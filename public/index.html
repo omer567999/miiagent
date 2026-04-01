@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindAgent — AI Araştırma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070b12;
+            --bg2: #0d1420;
+            --bg3: #131d2e;
+            --border: #1e2d42;
+            --accent: #3b82f6;
+            --text: #e2e8f0;
+            --text2: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* AUTH */
+        .auth {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            z-index: 100;
+        }
+
+        .auth-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            width: 400px;
+        }
+
+        .auth-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .auth-sub {
+            font-size: 13px;
+            color: var(--text2);
+            margin-bottom: 24px;
+        }
+
+        .fg {
+            margin-bottom: 14px;
+        }
+
+        .fl {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .fi {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+        }
+
+        .fi:focus {
+            border-color: var(--accent);
+        }
+
+        .fi::placeholder {
+            color: var(--text2);
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .15s;
+        }
+
+        .bp {
+            background: var(--accent);
+            color: #fff;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .bp:hover {
+            background: #60a5fa;
+        }
+
+        .bp:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .bo {
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .bo:hover {
+            color: var(--text);
+        }
+
+        .toggle {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text2);
+        }
+
+        .toggle span {
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* APP */
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-t {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .logo-s {
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 2px;
+        }
+
+        .nav {
+            padding: 12px 8px;
+            flex: 1;
+        }
+
+        .ni {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            transition: all .15s;
+            margin-bottom: 2px;
+        }
+
+        .ni:hover {
+            background: var(--bg3);
+            color: var(--text);
+        }
+
+        .ni.active {
+            background: rgba(59, 130, 246, .1);
+            color: var(--accent);
+        }
+
+        .plan-box {
+            margin: 8px;
+            padding: 14px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .plan-n {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .plan-i {
+            font-size: 11px;
+            color: var(--text2);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow:auto;
+        }
+
+        .header {
+            padding: 18px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg2);
+        }
+
+        .header-t {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+        }
+
+        .box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .box-t {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .box-s {
+            font-size: 13px;
+            color: var(--text2);
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ki {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+        }
+
+        .ki:focus {
+            border-color: var(--accent);
+        }
+
+        .ki::placeholder {
+            color: var(--text2);
+        }
+
+        .log {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 16px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .log-i {
+            font-size: 12px;
+            color: var(--text2);
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stream {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 16px;
+            min-height: 80px;
+            display: none;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .card:hover {
+            border-color: rgba(59, 130, 246, .4);
+            transform: translateY(-2px);
+        }
+
+        .card-t {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-m {
+            font-size: 11px;
+            color: var(--text2);
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .done {
+            background: rgba(16, 185, 129, .1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, .2);
+        }
+
+        .proc {
+            background: rgba(245, 158, 11, .1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, .2);
+        }
+
+        .detail {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+        }
+
+        .detail-c {
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: var(--text2);
+        }
+
+        .ei {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .et {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 999;
+            animation: si .3s ease;
+        }
+
+        @keyframes si {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .ts {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .te {
+            background: var(--error);
+            color: #fff;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH -->
+    <div id="authDiv" class="auth">
+        <div class="auth-box">
+            <div class="auth-logo">MindAgent</div>
+            <div class="auth-sub">AI ile araştır, analiz et, raporla.</div>
+            <div id="regFields">
+                <div class="fg">
+                    <label class="fl">Ad Soyad</label>
+                    <input class="fi" id="fullName" type="text" placeholder="Adınız Soyadınız">
+                </div>
+            </div>
+            <div class="fg">
+                <label class="fl">Email</label>
+                <input class="fi" id="email" type="email" placeholder="email@ornek.com">
+            </div>
+            <div class="fg">
+                <label class="fl">Şifre</label>
+                <input class="fi" id="password" type="password" placeholder="En az 8 karakter">
+            </div>
+            <button class="btn bp" id="authBtn" onclick="handleAuth()">Ücretsiz Başla</button>
+            <div class="toggle">
+                <span id="tText">Hesabın var mı?</span>
+                <span onclick="toggleAuth()" id="tLink"> Giriş yap</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANA UYGULAMA -->
+    <div id="appDiv" class="app" style="display:none">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-t">MindAgent</div>
+                <div class="logo-s">AI Araştırma Platformu</div>
+            </div>
+            <nav class="nav">
+                <div class="ni active" id="n-d" onclick="tab('d')">🏠 Dashboard</div>
+                <div class="ni" id="n-r" onclick="tab('r')">📄 Raporlarım</div>
+            </nav>
+            <div class="plan-box">
+                <div class="plan-n" id="planN">Free Plan</div>
+                <div class="plan-i" id="planI">0 / 3 rapor</div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <!-- DASHBOARD -->
+            <div id="t-d">
+                <div class="header">
+                    <div class="header-t">Yeni Araştırma</div>
+                </div>
+                <div class="content">
+                    <div class="box">
+                        <div class="box-t">🧠 Ne araştırmak istiyorsun?</div>
+                        <div class="box-s">Konu yaz, AI araştırır, analiz eder, rapor üretir.</div>
+                        <div class="row">
+                            <input class="ki" id="konuInput" placeholder="Örnek: 2026 AI teknolojileri ve iş fırsatları"
+                                onkeydown="if(event.key==='Enter')ara()">
+                            <button class="btn bp" style="width:auto;padding:0 24px" id="araBtn"
+                                onclick="ara()">Araştır</button>
+                        </div>
+                        <div class="log" id="logDiv"></div>
+                        <div class="stream" id="streamDiv"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RAPORLAR -->
+            <div id="t-r" style="display:none">
+                <div class="header">
+                    <div class="header-t">Raporlarım</div>
+                </div>
+                <div class="content">
+                    <div id="rapList"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000';
+        let token = localStorage.getItem('ma_token');
+        let user = JSON.parse(localStorage.getItem('ma_user') || 'null');
+        let ws = null;
+        let isLogin = false;
+
+        window.onload = () => { if (token && user) showApp(); };
+
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('regFields').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('authBtn').textContent = isLogin ? 'Giriş Yap' : 'Ücretsiz Başla';
+            document.getElementById('tText').textContent = isLogin ? 'Hesabın yok mu?' : 'Hesabın var mı?';
+            document.getElementById('tLink').textContent = isLogin ? ' Kayıt ol' : ' Giriş yap';
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) return toast('Email ve şifre zorunlu', 'e');
+            if (!isLogin && password.length < 8) return toast('Şifre en az 8 karakter olmalı', 'e');
+            const btn = document.getElementById('authBtn');
+            btn.disabled = true; btn.textContent = 'Bekleyin...';
+            try {
+                const url = isLogin ? '/api/auth/login' : '/api/auth/register';
+                const body = isLogin ? { email, password } : { email, password, fullName: document.getElementById('fullName').value };
+                const res = await fetch(API + url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                token = data.token; user = data.user;
+                localStorage.setItem('ma_token', token);
+                localStorage.setItem('ma_user', JSON.stringify(user));
+                showApp(); toast('Hoşgeldiniz! 🎉', 's');
+            } catch (err) { toast(err.message, 'e'); }
+            finally { btn.disabled = false; btn.textContent = isLogin ? 'Giriş Yap' : 'Ücretsiz Başla'; }
+        }
+
+        function showApp() {
+            document.getElementById('authDiv').style.display = 'none';
+            document.getElementById('appDiv').style.display = 'flex';
+            wsAc(); yuklePlan(); yukleRapor();
+        }
+
+        function tab(t) {
+            ['d', 'r'].forEach(x => {
+                document.getElementById('t-' + x).style.display = 'none';
+                document.getElementById('n-' + x).classList.remove('active');
+            });
+            document.getElementById('t-' + t).style.display = 'block';
+            document.getElementById('n-' + t).classList.add('active');
+            if (t === 'r') yukleRapor();
+        }
+
+        function wsAc() {
+            ws = new WebSocket('ws://localhost:3000');
+            ws.onopen = () => console.log('WS bağlandı');
+            ws.onmessage = (e) => {
+                const m = JSON.parse(e.data);
+                if (m.tip === 'basladi') log('🚀 ' + m.veri);
+                else if (m.tip === 'adim') log(m.veri);
+                else if (m.tip === 'kelime') {
+                    const s = document.getElementById('streamDiv');
+                    s.style.display = 'block'; s.textContent += m.veri; s.scrollTop = s.scrollHeight;
+                }
+                else if (m.tip === 'tamamlandi') {
+                    log('✅ Rapor tamamlandı!');
+                    document.getElementById('araBtn').disabled = false;
+                    document.getElementById('araBtn').textContent = 'Araştır';
+                    toast('Rapor hazır! 🎉', 's');
+                    yukleRapor(); yuklePlan();
+                }
+                else if (m.tip === 'hata') {
+                    log('❌ ' + m.veri); toast(m.veri, 'e');
+                    document.getElementById('araBtn').disabled = false;
+                    document.getElementById('araBtn').textContent = 'Araştır';
+                }
+            };
+            ws.onclose = () => setTimeout(wsAc, 3000);
+        }
+
+        function log(msg) {
+            const d = document.getElementById('logDiv');
+            d.style.display = 'block';
+            const i = document.createElement('div'); i.className = 'log-i'; i.textContent = msg;
+            d.appendChild(i); d.scrollTop = d.scrollHeight;
+        }
+
+        async function ara() {
+            const konu = document.getElementById('konuInput').value.trim();
+            if (!konu) return toast('Konu yazın', 'e');
+            document.getElementById('logDiv').innerHTML = '';
+            document.getElementById('logDiv').style.display = 'none';
+            document.getElementById('streamDiv').textContent = '';
+            document.getElementById('streamDiv').style.display = 'none';
+            const btn = document.getElementById('araBtn');
+            btn.disabled = true; btn.textContent = 'Çalışıyor...';
+            try {
+                const res = await fetch(API + '/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ konu })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                ws.send(JSON.stringify({ tip: 'rapor_olustur', reportId: data.reportId, konu, token }));
+            } catch (err) { toast(err.message, 'e'); btn.disabled = false; btn.textContent = 'Araştır'; }
+        }
+
+        async function yukleRapor() {
+            try {
+                const res = await fetch(API + '/api/reports', { headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json();
+                const c = document.getElementById('rapList');
+                if (!data.length) {
+                    c.innerHTML = '<div class="empty"><div class="ei">📄</div><div class="et">Henüz rapor yok</div><div style="font-size:13px;color:var(--text2)">Dashboard\'dan araştırma başlatın</div></div>';
+                    return;
+                }
+                c.innerHTML = '<div class="grid">' + data.map(r =>
+                    `<div class="card" onclick="raporDetay('${r.id}')">
+        <div class="card-t">${esc(r.title)}</div>
+        <div class="card-m">
+          <span class="badge ${r.status === 'done' ? 'done' : 'proc'}">${r.status === 'done' ? '✅ Hazır' : '⏳ İşleniyor'}</span>
+          <span>📊 ${r.source_count} kaynak</span>
+        </div>
+      </div>`
+                ).join('') + '</div>';
+            } catch (err) { console.error(err); }
+        }
+
+        async function raporDetay(id) {
+            try {
+                const res = await fetch(API + '/api/reports/' + id, { headers: { 'Authorization': 'Bearer ' + token } });
+                const r = await res.json();
+                document.getElementById('rapList').innerHTML =
+                    `<button class="btn bo" style="margin-bottom:16px" onclick="yukleRapor()">← Geri</button>
+       <div class="detail">
+         <h2 style="font-family:Syne;margin-bottom:8px">${esc(r.title)}</h2>
+         <div style="font-size:12px;color:var(--text2);margin-bottom:20px">
+           ${new Date(r.created_at).toLocaleString('tr-TR')} • ${r.source_count} kaynak
+         </div>
+         <div class="detail-c">${esc(r.content || 'İşleniyor...')}</div>
+       </div>`;
+            } catch { toast('Rapor yüklenemedi', 'e'); }
+        }
+
+        async function yuklePlan() {
+            try {
+                const res = await fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json();
+                user = data.user;
+                document.getElementById('planN').textContent = user.plan.charAt(0).toUpperCase() + user.plan.slice(1) + ' Plan';
+                document.getElementById('planI').textContent = user.reports_used + ' / ' + (user.plan === 'free' ? 3 : '∞') + ' rapor';
+            } catch { }
+        }
+
+        function toast(msg, t) {
+            const d = document.createElement('div');
+            d.className = 'toast ' + (t === 's' ? 'ts' : 'te');
+            d.textContent = msg; document.body.appendChild(d);
+            setTimeout(() => d.remove(), 3000);
+        }
+
+        function esc(t) {
+            return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+
+</html>
