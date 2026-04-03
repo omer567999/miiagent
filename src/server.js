@@ -17,16 +17,29 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tavilyClient = tavily({ apiKey: process.env.TAVILY_API_KEY });
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-app.use(helmet({ contentSecurityPolicy: false }));
+// GÜVENLİK AYARI (Butonların çalışması için bunu kapatmalıyız şimdilik)
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(cors());
 app.use(express.json());
+
+// BURASI ÇOK ÖNEMLİ: Dosya yoluna ../ ekledik
 app.use(express.static(path.join(__dirname, '../public')));
+
+// ANA SAYFAYI ÇAĞIRMA: Bu blok sende yoktu, ekle mutlaka
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
 
 async function setupDatabase() {
     const client = await pool.connect();
@@ -255,7 +268,7 @@ wss.on('connection', (ws) => {
 const PORT = process.env.PORT || 3000;
 setupDatabase().then(() => {
     server.listen(PORT, () => {
-        console.log(`🚀 MindAgent: http://localhost:${PORT}`);
+        console.log(`🚀 MiiAgent: http://localhost:${PORT}`);
         console.log(`🔌 WebSocket: ws://localhost:${PORT}`);
     });
 }).catch(err => {
