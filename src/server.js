@@ -31,11 +31,11 @@ app.use(cors());
 app.use(express.json());
 
 // BURASI ÇOK ÖNEMLİ: Dosya yoluna ../ ekledik
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static('public'));
 
 // ANA SAYFAYI ÇAĞIRMA: Bu blok sende yoktu, ekle mutlaka
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.resolve('public/index.html'));
 });
 
 app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
